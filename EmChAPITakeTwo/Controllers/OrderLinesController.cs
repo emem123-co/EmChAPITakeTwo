@@ -25,14 +25,14 @@ namespace EmChAPITakeTwo.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderLine>>> GetOrderLine()
         {
-            return await _context.OrderLine.ToListAsync();
+            return await _context.OrderLines.ToListAsync();
         }
 
         // GET: api/OrderLines/5
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderLine>> GetOrderLine(int id)
         {
-            var orderLine = await _context.OrderLine.FindAsync(id);
+            var orderLine = await _context.OrderLines.FindAsync(id);
 
             if (orderLine == null)
             {
@@ -41,7 +41,25 @@ namespace EmChAPITakeTwo.Controllers
 
             return orderLine;
         }
+//update order total
+    private async Task<IActionResult> OrderTotal(int orderID)
+        {
+            var order = await _context.Orders.FindAsync(orderID);
+            if(order is null)
+            {
+                return NotFound();
+            }
+            order.OrderTotal = (from ol in _context.OrderLines
+                                join i in _context.Items
+                                    on ol.ItemId equals i.Id
+                                where ol.OrderId == orderID
+                                select new
+                                {
+                                LineTotal = ol.Quantity * i.Price}).Sum(x=> x.LineTotal);
 
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
         // PUT: api/OrderLines/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
@@ -78,8 +96,9 @@ namespace EmChAPITakeTwo.Controllers
         [HttpPost]
         public async Task<ActionResult<OrderLine>> PostOrderLine(OrderLine orderLine)
         {
-            _context.OrderLine.Add(orderLine);
+            _context.OrderLines.Add(orderLine);
             await _context.SaveChangesAsync();
+            await OrderTotal(orderLine.OrderId);
 
             return CreatedAtAction("GetOrderLine", new { id = orderLine.Id }, orderLine);
         }
@@ -88,21 +107,22 @@ namespace EmChAPITakeTwo.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteOrderLine(int id)
         {
-            var orderLine = await _context.OrderLine.FindAsync(id);
+            var orderLine = await _context.OrderLines.FindAsync(id);
             if (orderLine == null)
             {
                 return NotFound();
             }
 
-            _context.OrderLine.Remove(orderLine);
+            _context.OrderLines.Remove(orderLine);
             await _context.SaveChangesAsync();
+            await OrderTotal(orderLine.OrderId);
 
             return NoContent();
         }
 
         private bool OrderLineExists(int id)
         {
-            return _context.OrderLine.Any(e => e.Id == id);
+            return _context.OrderLines.Any(e => e.Id == id);
         }
     }
 }

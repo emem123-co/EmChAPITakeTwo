@@ -15,9 +15,9 @@ namespace EmChAPITakeTwo.Data
         }
 
         public DbSet<EmChAPITakeTwo.Models.Customer> Customers { get; set; } = default!;
-        public DbSet<EmChAPITakeTwo.Models.Employee> Employee { get; set; } = default!;
-        public DbSet<EmChAPITakeTwo.Models.Item> Item { get; set; } = default!;
-        public DbSet<EmChAPITakeTwo.Models.OrderLine> OrderLine { get; set; } = default!;
-        public DbSet<EmChAPITakeTwo.Models.Order> Order { get; set; } = default!;
+        public DbSet<EmChAPITakeTwo.Models.Employee> Employees { get; set; } = default!;
+        public DbSet<EmChAPITakeTwo.Models.Item> Items { get; set; } = default!;
+        public DbSet<EmChAPITakeTwo.Models.OrderLine> OrderLines { get; set; } = default!;
+        public DbSet<EmChAPITakeTwo.Models.Order> Orders { get; set; } = default!;
     }
 }
