@@ -49,7 +49,7 @@ namespace EmChAPITakeTwo.Controllers
             {
                 return NotFound();
             }
-            order.OrderTotal = (from ol in _context.OrderLines
+            order.OrderTotal = (from ol in _context.OrderLines 
                                 join i in _context.Items
                                     on ol.ItemId equals i.Id
                                 where ol.OrderId == orderID
